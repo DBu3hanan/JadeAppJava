@@ -6,31 +6,93 @@ public class AdminMainMenu {
     private JFrame frame;
 
     public void display() {
-        frame = new JFrame("Admin Main Menu");
-        frame.setSize(400, 300);
+        // Create the main frame for the Admin Menu
+        frame = new JFrame("Administrator Main Menu");
+        frame.setSize(400, 350);
         frame.setLocationRelativeTo(null); // Center the window
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // Use BorderLayout for the panel so we can easily add a label at the top
         JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
+        panel.setLayout(new BorderLayout()); // Use BorderLayout to position components
 
-        // Add components for the Admin Menu (e.g., View Users, Settings)
-        JButton viewUsersButton = new JButton("View All Users");
-        JButton settingsButton = new JButton("Admin Settings");
+        // Add the "Administrator Main Menu" label at the top (NORTH)
+        JLabel titleLabel = new JLabel("Administrator Main Menu\n", JLabel.CENTER);
+        titleLabel.setFont(new Font("Times New Roman", Font.BOLD, 25));
+        panel.add(titleLabel, BorderLayout.NORTH);
 
-        // Add action listeners for buttons (Implement these actions as needed)
-        viewUsersButton.addActionListener(e -> {
-            System.out.println("View Users clicked");
+        // Set up the panel for the buttons (Center area)
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(5, 2, 10, 10)); // GridLayout for buttons with spacing
+
+        // Create buttons for each of the admin actions
+        JButton createUserButton = new JButton("Create User");
+        JButton viewUserButton = new JButton("View User");
+        JButton updateUserButton = new JButton("Update User");
+        JButton createResourceButton = new JButton("Create Resource");
+        JButton editResourceButton = new JButton("Edit Resource");
+        JButton viewResourceButton = new JButton("View Resource");
+        JButton reviewFeedbackButton = new JButton("Review Feedback");
+        JButton backButton = new JButton("Go Back");
+
+        // Action listener for "Create User" button
+        createUserButton.addActionListener(e -> {
+            AdminFunctions.showCreateUserForm(frame);
         });
 
-        settingsButton.addActionListener(e -> {
-            System.out.println("Settings clicked");
+        // Action listener for "Create Resource" button
+        createResourceButton.addActionListener(e -> {
+            AdminFunctions.showCreateResourceForm(frame);
         });
 
-        panel.add(viewUsersButton);
-        panel.add(settingsButton);
+        // Action listener for "View User" button
+        viewUserButton.addActionListener(e -> {
+            AdminFunctions.showUsersInTextArea(frame);
+        });
 
+        // Action listener for "Update User" button
+        updateUserButton.addActionListener(e -> {
+            AdminFunctions.showUpdateUserForm(frame);
+        });
+
+        // Action listener for "Edit Resource" button
+        editResourceButton.addActionListener(e -> {
+            AdminFunctionsTwo.showEditResourceWindow(frame);
+        });
+
+        // Action listener for "View Resource" button
+        viewResourceButton.addActionListener(e -> {
+            AdminFunctionsTwo.showViewResourcesWindow(frame);
+        });
+
+        // Action listener for "Review Feedback" button
+        reviewFeedbackButton.addActionListener(e -> {
+            AdminFunctionsTwo.showFeedbackWindow(frame);
+        });
+
+        // Action listener for the "Go Back" button
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            new MainGUI().initialize(); // Open the Main Menu
+        });
+
+        // Add buttons to the button panel
+        buttonPanel.add(createUserButton);
+        buttonPanel.add(viewUserButton);
+        buttonPanel.add(updateUserButton);
+        buttonPanel.add(createResourceButton);
+        buttonPanel.add(editResourceButton);
+        buttonPanel.add(viewResourceButton);
+        buttonPanel.add(reviewFeedbackButton);
+        buttonPanel.add(backButton);
+
+        // Add the button panel to the main panel (Center part of the frame)
+        panel.add(buttonPanel, BorderLayout.CENTER);
+
+        // Add the main panel to the frame
         frame.getContentPane().add(panel);
         frame.setVisible(true);
     }
+
+    
 }
