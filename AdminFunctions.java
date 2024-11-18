@@ -102,11 +102,14 @@ public static void showUsersInTextArea(JFrame parentFrame) {
     try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"))) {
         String line;
         while ((line = reader.readLine()) != null) {
-            // Use "\\|" to split on the pipe character
+            // Skip empty lines
+            if (line.trim().isEmpty()) continue;
+
+            // Split the line using '|' as the delimiter
             String[] userDetails = line.split("\\|");
             if (userDetails.length >= 2) {
                 // Add only the first name and last name to the list
-                userNames.add(userDetails[0] + " " + userDetails[1]);
+                userNames.add(userDetails[0].trim() + " " + userDetails[1].trim());
             }
         }
     } catch (IOException e) {
@@ -114,7 +117,11 @@ public static void showUsersInTextArea(JFrame parentFrame) {
     }
 
     // Display the user names in the JTextArea
-    userTextArea.setText(String.join("\n", userNames));
+    if (userNames.isEmpty()) {
+        userTextArea.setText("No users found.");
+    } else {
+        userTextArea.setText(String.join("\n", userNames));
+    }
 
     // Add components to the panel
     panel.add(new JLabel("Users (First Name and Last Name):"), BorderLayout.NORTH);
@@ -124,6 +131,7 @@ public static void showUsersInTextArea(JFrame parentFrame) {
     viewUsersFrame.getContentPane().add(panel);
     viewUsersFrame.setVisible(true);
 }
+
 
 
 
@@ -195,7 +203,7 @@ public static void showUsersInTextArea(JFrame parentFrame) {
     }
 
     //UPDATE USER FORM
-    
+    //FIX
     public static void showUpdateUserForm(JFrame parentFrame) {
         // Create a new frame for updating user details
         JFrame updateUserFrame = new JFrame("Update User");

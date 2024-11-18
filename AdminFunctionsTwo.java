@@ -7,95 +7,104 @@ import java.util.List;
 
 public class AdminFunctionsTwo {
 
-    // Method to edit a user's details
-    public static void editUser(JFrame parentFrame) {
-        // Create a new frame for editing user details
-        JFrame editUserFrame = new JFrame("Edit User");
-        editUserFrame.setSize(400, 300);
-        editUserFrame.setLocationRelativeTo(parentFrame); // Center relative to parent frame
+// Method to edit a user's details
+public static void editUser(JFrame parentFrame) {
+    // Create a new frame for editing user details
+    JFrame editUserFrame = new JFrame("Edit User");
+    editUserFrame.setSize(400, 300);
+    editUserFrame.setLocationRelativeTo(parentFrame); // Center relative to parent frame
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        // Create fields to capture user information
-        JTextField usernameField = new JTextField();
-        JTextField newFirstNameField = new JTextField();
-        JTextField newLastNameField = new JTextField();
+    // Create fields to capture user information
+    JTextField usernameField = new JTextField();
+    JTextField newFirstNameField = new JTextField();
+    JTextField newLastNameField = new JTextField();
 
-        // Add labels and fields to the panel
-        panel.add(new JLabel("Enter Username of the User to Edit:"));
-        panel.add(usernameField);
-        panel.add(new JLabel("New First Name:"));
-        panel.add(newFirstNameField);
-        panel.add(new JLabel("New Last Name:"));
-        panel.add(newLastNameField);
+    // Add labels and fields to the panel
+    panel.add(new JLabel("Enter Username of the User to Edit:"));
+    panel.add(usernameField);
+    panel.add(new JLabel("New First Name:"));
+    panel.add(newFirstNameField);
+    panel.add(new JLabel("New Last Name:"));
+    panel.add(newLastNameField);
 
-        // Create a button to save changes
-        JButton saveChangesButton = new JButton("Save Changes");
-        saveChangesButton.addActionListener(e -> {
-            String username = usernameField.getText().trim();
-            String newFirstName = newFirstNameField.getText().trim();
-            String newLastName = newLastNameField.getText().trim();
+    // Create a button to save changes
+    JButton saveChangesButton = new JButton("Save Changes");
+    saveChangesButton.addActionListener(e -> {
+        String username = usernameField.getText().trim();
+        String newFirstName = newFirstNameField.getText().trim();
+        String newLastName = newLastNameField.getText().trim();
 
-            if (username.isEmpty() || newFirstName.isEmpty() || newLastName.isEmpty()) {
-                JOptionPane.showMessageDialog(editUserFrame, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
+        if (username.isEmpty() || newFirstName.isEmpty() || newLastName.isEmpty()) {
+            JOptionPane.showMessageDialog(editUserFrame, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            if (updateUserDetails(username, newFirstName, newLastName)) {
+                JOptionPane.showMessageDialog(editUserFrame, "User details updated successfully!");
+                editUserFrame.dispose(); // Close the edit frame
             } else {
-                if (updateUserDetails(username, newFirstName, newLastName)) {
-                    JOptionPane.showMessageDialog(editUserFrame, "User details updated successfully!");
-                    editUserFrame.dispose(); // Close the edit frame
-                } else {
-                    JOptionPane.showMessageDialog(editUserFrame, "User not found!", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(editUserFrame, "User not found!", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        });
+        }
+    });
 
-        panel.add(saveChangesButton);
+    panel.add(saveChangesButton);
 
-        editUserFrame.getContentPane().add(panel);
-        editUserFrame.setVisible(true);
+    editUserFrame.getContentPane().add(panel);
+    editUserFrame.setVisible(true);
+}
+
+
+
+
+// Utility method to update user details in the "users.txt" file
+private static boolean updateUserDetails(String username, String newFirstName, String newLastName) {
+    File userFile = new File("users.txt");
+    if (!userFile.exists()) {
+        return false; // File not found
     }
 
-    // Utility method to update user details in the "users.txt" file
-    private static boolean updateUserDetails(String username, String newFirstName, String newLastName) {
-        File userFile = new File("users.txt");
-        if (!userFile.exists()) {
-            return false; // File not found
+    List<String> updatedLines = new ArrayList<>();
+    boolean userFound = false;
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(userFile))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] userDetails = line.split(","); // Assuming | is the delimiter
+            if (userDetails.length == 4 && userDetails[2].equals(username)) {
+                // Update first and last name
+                userDetails[0] = newFirstName;
+                userDetails[1] = newLastName;
+                userFound = true;
+            }
+            updatedLines.add(String.join("|", userDetails)); // Rebuild line without password
         }
+    } catch (IOException e) {
+        e.printStackTrace();
+        return false;
+    }
 
-        List<String> updatedLines = new ArrayList<>();
-        boolean userFound = false;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(userFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] userDetails = line.split(",");
-                if (userDetails.length == 4 && userDetails[2].equals(username)) {
-                    // Update first and last name
-                    userDetails[0] = newFirstName;
-                    userDetails[1] = newLastName;
-                    userFound = true;
-                }
-                updatedLines.add(String.join(",", userDetails));
+    if (userFound) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(userFile))) {
+            for (String updatedLine : updatedLines) {
+                writer.write(updatedLine);
+                writer.newLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-
-        if (userFound) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(userFile))) {
-                for (String updatedLine : updatedLines) {
-                    writer.write(updatedLine);
-                    writer.newLine();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-
-        return userFound;
     }
+
+    return userFound;
+}
+
+
+
+
+
+
 
     public static void showEditResourceWindow(JFrame parentFrame) {
         // Create a new frame for editing resources

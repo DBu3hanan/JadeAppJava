@@ -45,7 +45,7 @@ public class AdminMainMenu {
             AdminFunctions.showCreateResourceForm(frame);
         });
 
-        // Action listener for "View User" button
+        // Action listener for "View Users List" button
         viewUserButton.addActionListener(e -> {
             AdminFunctions.showUsersInTextArea(frame);
         });

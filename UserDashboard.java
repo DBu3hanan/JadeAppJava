@@ -83,7 +83,7 @@ public class UserDashboard {
                 + "1. Register Account: To create a new account, you can use the Register Account option.\n"
                 + "2. Login: To log in to your account, you can use the Login option.\n"
                 + "3. Exit: To exit the application, you can use the Exit option.\n"
-                + "4. Users can create, update, view, and delete their accounts.\n\n"
+                + "4. Users can create, update, and view their accounts.\n\n"
                 + "User Support:\n"
                 + "4. Read Guidelines: To read the guidelines, you can use the Read Guidelines option.\n"
                 + "5. Edit User Information: Users can update their account information, such as username and password.\n"
@@ -113,12 +113,13 @@ public class UserDashboard {
         // Set the frame to be visible
         guidelinesFrame.setVisible(true);
     }
+
     
     //FIXXXXX   
     // Method to edit user information
     private void editUserInfo() {  
         JFrame editFrame = new JFrame("Edit User Information");
-        editFrame.setSize(400, 400);
+        editFrame.setSize(400, 200);
         editFrame.setLocationRelativeTo(null);
     
         JPanel panel = new JPanel();
@@ -176,7 +177,7 @@ public class UserDashboard {
     
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] userDetails = line.split("\\|");
+                String[] userDetails = line.split(",");
     
                 // Assuming the username is the first field and we're updating it
                 if (userDetails[0].equals(username)) {

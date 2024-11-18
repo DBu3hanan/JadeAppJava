@@ -1,67 +1,69 @@
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.border.AbstractBorder;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UserMainMenu {
 
     private JFrame frame;
-    private JTable userTable;
-    private DefaultTableModel tableModel;
 
     public void display() {
         frame = new JFrame("User Main Menu");
-        
-        frame.setSize(400, 100);
+        frame.setSize(400, 300);
         frame.setLocationRelativeTo(null); // Center the window
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Set layout to BoxLayout
 
-        // Add buttons for Register, Login, View Users, and Go Back
+        // Add top label "User Main Menu"
+        JLabel titleLabel = new JLabel("User Main Menu");
+        titleLabel.setFont(new Font("Times New Roman", Font.BOLD, 20)); // Large bold font for the title
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the label
+
+        panel.add(Box.createRigidArea(new Dimension(0, 20))); // Blank space at the top before the title
+        panel.add(titleLabel);
+
+        // Add buttons for Register, Login, and Go Back
         JButton registerButton = new JButton("Register Account");
         JButton loginButton = new JButton("Account Login");
-       
         JButton backButton = new JButton("Go Back");
 
-        // Register Button Action
-        registerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showRegistrationForm();
-            }
-        });
+        // Apply green button styling
+        styleButton(registerButton);
+        styleButton(loginButton);
+        styleButton(backButton);
 
-        // Login Button Action
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                login();
-            }
-        });
+        registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-
-
-        // Back Button Action
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new MainGUI().initialize(); // Go back to the main menu
-            }
-        });
-
-        // Add buttons to the panel
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(registerButton);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(loginButton);
-       
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(backButton);
+
+        registerButton.addActionListener(e -> {
+            try {
+                showRegistrationForm();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "An error occurred: " + ex.getMessage());
+            }
+        });
+
+        loginButton.addActionListener(e -> login());
+
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            new MainGUI().initialize(); // Go back to the main menu
+        });
 
         frame.getContentPane().add(panel);
         frame.setVisible(true);
@@ -75,7 +77,6 @@ public class UserMainMenu {
         JPanel registerPanel = new JPanel();
         registerPanel.setLayout(new GridLayout(6, 2));
 
-        // Add fields for registration
         JLabel firstNameLabel = new JLabel("First Name:");
         JTextField firstNameField = new JTextField();
         JLabel lastNameLabel = new JLabel("Last Name:");
@@ -88,32 +89,28 @@ public class UserMainMenu {
         JTextField emailField = new JTextField();
 
         JButton registerButton = new JButton("Register");
+        styleButton(registerButton);
 
-        registerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String firstName = firstNameField.getText();
-                String lastName = lastNameField.getText();
-                String username = usernameField.getText();
-                String password = new String(passwordField.getPassword());
-                String email = emailField.getText();
+        registerButton.addActionListener(e -> {
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
+            String email = emailField.getText();
 
-                // Validate inputs
-                if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty() || email.isEmpty()) {
-                    JOptionPane.showMessageDialog(registerFrame, "All fields must be filled out.", "Error", JOptionPane.ERROR_MESSAGE);
-                } else if (!isValidEmail(email)) {
-                    JOptionPane.showMessageDialog(registerFrame, "Enter a valid email address.", "Error", JOptionPane.ERROR_MESSAGE);
-                } else if (usernameExists(username)) {
-                    JOptionPane.showMessageDialog(registerFrame, "Username already exists. Choose another.", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    saveUserToFile(firstName, lastName, username, password, email);
-                    JOptionPane.showMessageDialog(registerFrame, "Registration successful!");
-                    registerFrame.dispose();
-                }
+            if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty() || email.isEmpty()) {
+                JOptionPane.showMessageDialog(registerFrame, "All fields must be filled out.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (!isValidEmail(email)) {
+                JOptionPane.showMessageDialog(registerFrame, "Enter a valid email address.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (usernameExists(username)) {
+                JOptionPane.showMessageDialog(registerFrame, "Username already exists. Choose another.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                saveUserToFile(firstName, lastName, username, password, email);
+                JOptionPane.showMessageDialog(registerFrame, "Registration successful!");
+                registerFrame.dispose();
             }
         });
 
-        // Add components to the panel
         registerPanel.add(firstNameLabel);
         registerPanel.add(firstNameField);
         registerPanel.add(lastNameLabel);
@@ -145,26 +142,19 @@ public class UserMainMenu {
         JPasswordField passwordField = new JPasswordField();
 
         JButton loginButton = new JButton("Login");
+        styleButton(loginButton);
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                String password = new String(passwordField.getPassword());
+        loginButton.addActionListener(e -> {
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
 
-                if (validateLogin(username, password)) {
-                    JOptionPane.showMessageDialog(loginFrame, "Login successful!");
-                    loginFrame.dispose(); // Close the login frame
-                
-                    // Open the user dashboard or the next window
-                    UserDashboard userDashboard = new UserDashboard();
-                    userDashboard.display(); // Call the method to display the dashboard
-                } else {
-                    JOptionPane.showMessageDialog(loginFrame, "Invalid credentials.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-
+            if (validateLogin(username, password)) {
+                JOptionPane.showMessageDialog(loginFrame, "Login successful!");
+                loginFrame.dispose();
+                new UserDashboard().display();
+            } else {
+                JOptionPane.showMessageDialog(loginFrame, "Invalid credentials.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-                
         });
 
         loginPanel.add(usernameLabel);
@@ -178,14 +168,38 @@ public class UserMainMenu {
         loginFrame.setVisible(true);
     }
 
+    private void styleButton(JButton button) {
+        button.setBackground(new Color(0x4CAF50));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        button.setPreferredSize(new Dimension(200, 40));
+        button.setMaximumSize(new Dimension(200, 40));
+        button.setFocusPainted(false);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setBorder(new RoundBorder(30));
+    }
 
+    public class RoundBorder extends AbstractBorder {
+        private int radius;
+
+        public RoundBorder(int radius) {
+            this.radius = radius;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.draw(new RoundRectangle2D.Float(x, y, width - 1, height - 1, radius, radius));
+        }
+    }
 
     private boolean usernameExists(String username) {
         try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] userDetails = line.split(",");
-                if (userDetails[2].equals(username)) {
+                if (userDetails.length >= 3 && userDetails[2].equals(username)) {
                     return true;
                 }
             }
@@ -194,24 +208,32 @@ public class UserMainMenu {
         }
         return false;
     }
+    
 
     private void saveUserToFile(String firstName, String lastName, String username, String password, String email) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("users.txt", true))) {
-            // Write the user's details separated by |
+        File userFile = new File("users.txt");
+        if (!userFile.exists()) {
+            try {
+                userFile.createNewFile(); // Create the file if it doesn't exist
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(userFile, true))) {
             writer.write(firstName + "|" + lastName + "|" + username + "|" + password + "|" + email);
-            writer.newLine(); // Add a new line for the next user
+            writer.newLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     
-    
+
     private boolean validateLogin(String username, String password) {
         try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] userDetails = line.split("\\|"); // Escape the pipe character
-                if (userDetails[2].equals(username) && userDetails[3].equals(password)) {
+                String[] userDetails = line.split(",");
+                if (userDetails.length >= 4 && userDetails[2].equals(username) && userDetails[3].equals(password)) {
                     return true;
                 }
             }
@@ -220,7 +242,6 @@ public class UserMainMenu {
         }
         return false;
     }
-    
 
     private boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
@@ -228,6 +249,4 @@ public class UserMainMenu {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
-
-
 }
