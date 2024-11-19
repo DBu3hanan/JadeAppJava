@@ -198,7 +198,7 @@ public class UserMainMenu {
         try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] userDetails = line.split(",");
+                String[] userDetails = line.split("\\|");
                 if (userDetails.length >= 3 && userDetails[2].equals(username)) {
                     return true;
                 }
@@ -232,7 +232,7 @@ public class UserMainMenu {
         try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] userDetails = line.split(",");
+                String[] userDetails = line.split("\\|");
                 if (userDetails.length >= 4 && userDetails[2].equals(username) && userDetails[3].equals(password)) {
                     return true;
                 }

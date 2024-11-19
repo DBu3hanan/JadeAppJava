@@ -64,6 +64,12 @@ public class AdminFunctions {
                     return;
                 }
 
+                 // Check if the username already exists
+        if (usernameExists(username)) {
+            JOptionPane.showMessageDialog(createUserFrame, "Username is already taken. Please choose another.");
+            return;
+        }
+
                 // Save the user to a file
                 saveUserToFile(firstName, lastName, username, password, email);
 
@@ -92,6 +98,10 @@ public class AdminFunctions {
         createUserFrame.setVisible(true);
     }
 
+
+
+
+
     // Method to validate the email format
     public static boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zAZ]{2,7}$";
@@ -99,6 +109,35 @@ public class AdminFunctions {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
+
+
+    // Method to check if a username already exists in the file
+public static boolean usernameExists(String username) {
+    File userFile = new File("users.txt");
+
+    // If the file does not exist, return false (no usernames exist)
+    if (!userFile.exists()) {
+        return false;
+    }
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(userFile))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] userDetails = line.split("\\|");
+            // Check if the username matches the one in the file
+            if (userDetails.length >= 3 && userDetails[2].equalsIgnoreCase(username)) {
+                return true; // Username exists
+            }
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+
+    return false; // Username does not exist
+}
+
+
+
 
     // Method to save the user data to a file (using | as delimiter)
     public static void saveUserToFile(String firstName, String lastName, String username, String password, String email) {
@@ -127,6 +166,8 @@ public class AdminFunctions {
             JOptionPane.showMessageDialog(null, "Error creating file: " + e.getMessage());
         }
     }
+
+
 
 
 
