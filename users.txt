@@ -1,4 +1,2 @@
-DR|DR|DR|DR|D@gmail.com
-dt|yhh|ggg|ffhh|gh@gmail.com
-WE|WE|WE|WE|WE@GMAIL.COM
-Sade|Oconnor|sadeo|3455|we@gmail.com
+SADE|O|SADE|password|Sade@gmail.com
+Diamond|Buchanan|DB|abc123|Diamond@gmail.com
