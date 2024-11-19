@@ -10,32 +10,24 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 
 public class AdminFunctions {
 
-    // Method to save user data to a file
-    public static void saveUserToFile(String firstName, String lastName, String username, String password) {
-        try {
-            // Open the file in append mode
-            BufferedWriter writer = new BufferedWriter(new FileWriter("users.txt", true));
 
-            // Write the user's details to the file
-            writer.write(firstName + "|" + lastName + "|" + username + "|" + password);
-            writer.newLine(); // Add a new line for the next user
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Method to show the Create User form
+// Method to show the Create User form
     public static void showCreateUserForm(JFrame parentFrame) {
         JFrame createUserFrame = new JFrame("Create User");
-        createUserFrame.setSize(400, 300);
+
+        createUserFrame.setSize(400, 350);
         createUserFrame.setLocationRelativeTo(parentFrame); // Center relative to parent frame
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(5, 2)); // Grid layout for labels and text fields
+        panel.setLayout(new GridLayout(6, 2)); // Grid layout for labels and text fields
 
         // Add fields for user information
         JLabel firstNameLabel = new JLabel("First Name:");
@@ -46,22 +38,39 @@ public class AdminFunctions {
         JTextField usernameField = new JTextField();
         JLabel passwordLabel = new JLabel("Password:");
         JPasswordField passwordField = new JPasswordField();
+        JLabel emailLabel = new JLabel("Email:");
+        JTextField emailField = new JTextField();
 
         // Create the "Create" button
         JButton createButton = new JButton("Create User");
 
-        createButton.addActionListener(e -> {
-            String firstName = firstNameField.getText();
-            String lastName = lastNameField.getText();
-            String username = usernameField.getText();
-            String password = new String(passwordField.getPassword());
+        createButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String firstName = firstNameField.getText().trim();
+                String lastName = lastNameField.getText().trim();
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword()).trim();
+                String email = emailField.getText().trim();
 
-            // Save the user to a file
-            saveUserToFile(firstName, lastName, username, password);
+                // Validate input fields
+                if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty() || email.isEmpty()) {
+                    JOptionPane.showMessageDialog(createUserFrame, "Please fill in all fields.");
+                    return;
+                }
 
-            // Close the Create User frame and show confirmation
-            createUserFrame.dispose();
-            JOptionPane.showMessageDialog(createUserFrame, "User created successfully!");
+                // Validate email format
+                if (!isValidEmail(email)) {
+                    JOptionPane.showMessageDialog(createUserFrame, "Please enter a valid email address.");
+                    return;
+                }
+
+                // Save the user to a file
+                saveUserToFile(firstName, lastName, username, password, email);
+
+                // Close the Create User frame and show confirmation
+                createUserFrame.dispose();
+                JOptionPane.showMessageDialog(createUserFrame, "User created successfully!");
+            }
         });
 
         // Add components to the panel
@@ -73,6 +82,8 @@ public class AdminFunctions {
         panel.add(usernameField);
         panel.add(passwordLabel);
         panel.add(passwordField);
+        panel.add(emailLabel);
+        panel.add(emailField);
         panel.add(new JLabel()); // Empty label for layout purposes
         panel.add(createButton);
 
@@ -80,6 +91,51 @@ public class AdminFunctions {
         createUserFrame.getContentPane().add(panel);
         createUserFrame.setVisible(true);
     }
+
+    // Method to validate the email format
+    public static boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zAZ]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    // Method to save the user data to a file (using | as delimiter)
+    public static void saveUserToFile(String firstName, String lastName, String username, String password, String email) {
+        File userFile = new File("users.txt");
+
+        // Ensure the file exists or create it if it doesn't
+        try {
+            if (!userFile.exists()) {
+                userFile.createNewFile(); // Creates the file if it doesn't exist
+            }
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(userFile, true))) {
+                // Format the user data to be saved with | delimiter
+                String userData = firstName + "|" + lastName + "|" + username + "|" + password + "|" + email;
+
+                // Write the user data to the file
+                writer.write(userData);
+                writer.newLine(); // New line for the next user
+                System.out.println("Saving user to file: " + userData); // Debugging output
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error saving user to file: " + e.getMessage());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error creating file: " + e.getMessage());
+        }
+    }
+
+
+
+
+
+
+
+
+
 
 // Method to show the users in a JTextArea
 public static void showUsersInTextArea(JFrame parentFrame) {
