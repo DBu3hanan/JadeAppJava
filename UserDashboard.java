@@ -8,6 +8,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+
 
 public class UserDashboard {
 
@@ -15,6 +19,7 @@ public class UserDashboard {
 
 
     public void display() {
+        
         // Create the main frame
         frame = new JFrame("User Dashboard");
         frame.setSize(400, 400);
@@ -37,13 +42,20 @@ public class UserDashboard {
         JButton editUserInfoButton = new JButton("Edit User Information");
         JButton viewResourcesButton = new JButton("View Resources");
         JButton giveFeedbackButton = new JButton("Give Feedback");
+        JButton viewMyDetailsButton = new JButton("View My Details");
+        JButton deleteAccountButton = new JButton("Delete My Account");
         JButton gobackButton = new JButton("Main Menu");
 
         // Add action listeners for each button
         readGuidelinesButton.addActionListener(e -> showGuidelines());
-        editUserInfoButton.addActionListener(e -> editUserInfo());
+       
+        editUserInfoButton.addActionListener(e -> editUser(frame));
+
         viewResourcesButton.addActionListener(e -> viewResources());
         giveFeedbackButton.addActionListener(e -> giveFeedback());
+        viewMyDetailsButton.addActionListener(e -> viewMyDetails());
+        deleteAccountButton.addActionListener(e -> deleteMyAccount(frame));
+        
 
         // Action listener for the "Go Back" button
         gobackButton.addActionListener(e -> {
@@ -56,7 +68,10 @@ public class UserDashboard {
         buttonPanel.add(editUserInfoButton);
         buttonPanel.add(viewResourcesButton);
         buttonPanel.add(giveFeedbackButton);
+        buttonPanel.add(deleteAccountButton);
+        buttonPanel.add(viewMyDetailsButton);
         buttonPanel.add(gobackButton);
+        
 
         // Add the button panel to the frame (CENTER)
         frame.add(buttonPanel, BorderLayout.CENTER);
@@ -114,93 +129,159 @@ public class UserDashboard {
         guidelinesFrame.setVisible(true);
     }
 
-    
-    //FIXXXXX   
-    // Method to edit user information
-    private void editUserInfo() {  
-        JFrame editFrame = new JFrame("Edit User Information");
-        editFrame.setSize(400, 200);
-        editFrame.setLocationRelativeTo(null);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public static void editUser(JFrame parentFrame) {
+        // Create a new frame for editing user details
+        JFrame editUserFrame = new JFrame("Edit Your Details");
+        editUserFrame.setSize(400, 350);
+        editUserFrame.setLocationRelativeTo(parentFrame); // Center relative to parent frame
     
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(5, 2)); // Fields for editing user info
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     
-        // Add fields for updating user info
-        JLabel usernameLabel = new JLabel("Username:");
-        JTextField usernameField = new JTextField(); // Pre-fill with current username (if applicable)
-        JLabel passwordLabel = new JLabel("New Password:");
-        JPasswordField passwordField = new JPasswordField();
+        // Create fields to capture user information
+        JTextField currentUsernameField = new JTextField();
+        JTextField newFirstNameField = new JTextField();
+        JTextField newLastNameField = new JTextField();
+        JPasswordField newPasswordField = new JPasswordField();
+        JTextField newEmailField = new JTextField();
     
-        // Save button to update user information
-        JButton saveButton = new JButton("Save Changes");
+        // Add labels and fields to the panel
+        panel.add(new JLabel("Enter Your Current Username:"));
+        panel.add(currentUsernameField);
+        panel.add(new JLabel("New First Name (Leave blank if unchanged):"));
+        panel.add(newFirstNameField);
+        panel.add(new JLabel("New Last Name (Leave blank if unchanged):"));
+        panel.add(newLastNameField);
+        panel.add(new JLabel("New Password (Leave blank if unchanged):"));
+        panel.add(newPasswordField);
+        panel.add(new JLabel("New Email (Leave blank if unchanged):"));
+        panel.add(newEmailField);
     
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                String newPassword = new String(passwordField.getPassword());
+        // Create a button to save changes
+        JButton saveChangesButton = new JButton("Save Changes");
+        saveChangesButton.addActionListener(e -> {
+            String username = currentUsernameField.getText().trim();
+            String newFirstName = newFirstNameField.getText().trim();
+            String newLastName = newLastNameField.getText().trim();
+            String newPassword = new String(newPasswordField.getPassword()).trim();
+            String newEmail = newEmailField.getText().trim();
     
-                // Code to update the user information (you may need to save it to a file or database)
-                if (username.isEmpty() || newPassword.isEmpty()) {
-                    JOptionPane.showMessageDialog(editFrame, "Please fill in both fields.", "Error", JOptionPane.ERROR_MESSAGE);
+            if (username.isEmpty()) {
+                JOptionPane.showMessageDialog(editUserFrame, "Username is required!", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                // Only validate non-empty fields
+                if (!newPassword.isEmpty() && newPassword.length() < 6) {
+                    JOptionPane.showMessageDialog(editUserFrame, "Password must be at least 6 characters long.", "Error", JOptionPane.ERROR_MESSAGE);
+                } else if (!newEmail.isEmpty() && !newEmail.contains("@")) {
+                    JOptionPane.showMessageDialog(editUserFrame, "Enter a valid email address.", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    updateUserInfo(username, newPassword); // Method to save updated information
-                    JOptionPane.showMessageDialog(editFrame, "User information updated successfully!");
-                    editFrame.dispose(); // Close the edit window
+                    if (updateUserDetails(username, newFirstName, newLastName, newPassword, newEmail)) {
+                        JOptionPane.showMessageDialog(editUserFrame, "Your details have been updated successfully!");
+                        editUserFrame.dispose(); // Close the edit frame
+                    } else {
+                        JOptionPane.showMessageDialog(editUserFrame, "Username not found. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         });
     
-        // Add components to the edit panel
-        panel.add(usernameLabel);
-        panel.add(usernameField);
-        panel.add(passwordLabel);
-        panel.add(passwordField);
-        panel.add(new JLabel()); // Empty space
-        panel.add(saveButton);
+        panel.add(saveChangesButton);
     
-        editFrame.add(panel);
-        editFrame.setVisible(true);
+        editUserFrame.getContentPane().add(panel);
+        editUserFrame.setVisible(true);
     }
     
-    // Method to update user information
-    private void updateUserInfo(String username, String newPassword) {
-        // Example of updating user info in a file (you would need to enhance this logic to handle file operations)
-        // For simplicity, let's just show the username and new password in a dialog or log it.
-        System.out.println("Updating user: " + username + " with new password: " + newPassword);
+
+
+
+
+
+
+    private static boolean updateUserDetails(String username, String newFirstName, String newLastName, String newPassword, String newEmail) {
+        File userFile = new File("users.txt");
+        if (!userFile.exists()) {
+            return false; // File not found
+        }
     
-        // You would need to implement logic to actually save the updated username and password
-        // Here’s an example of updating a file with the new details:
+        List<String> updatedLines = new ArrayList<>();
+        boolean userFound = false;
     
-        try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"));
-             BufferedWriter writer = new BufferedWriter(new FileWriter("users_temp.txt"))) {
-    
+        try (BufferedReader reader = new BufferedReader(new FileReader(userFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] userDetails = line.split(",");
-    
-                // Assuming the username is the first field and we're updating it
-                if (userDetails[0].equals(username)) {
-                    userDetails[1] = newPassword; // Assuming the password is the second field, update it.
+                String[] userDetails = line.split("\\|"); // Split by '|'
+                if (userDetails.length == 5 && userDetails[2].equals(username)) {
+                    // Update only the fields that are not empty
+                    if (!newFirstName.isEmpty()) {
+                        userDetails[0] = newFirstName;
+                    }
+                    if (!newLastName.isEmpty()) {
+                        userDetails[1] = newLastName;
+                    }
+                    if (!newPassword.isEmpty()) {
+                        userDetails[3] = newPassword;
+                    }
+                    if (!newEmail.isEmpty()) {
+                        userDetails[4] = newEmail;
+                    }
+                    userFound = true;
                 }
-    
-                // Write the updated user details to the temporary file
-                writer.write(String.join("|", userDetails));
-                writer.newLine();
-            }
-    
-            // Replace the old file with the updated one
-            File oldFile = new File("users.txt");
-            File newFile = new File("users_temp.txt");
-            if (oldFile.delete()) {
-                newFile.renameTo(oldFile);
+                updatedLines.add(String.join("|", userDetails)); // Rebuild line with updated details
             }
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error updating user information: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
+    
+        if (userFound) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(userFile))) {
+                for (String updatedLine : updatedLines) {
+                    writer.write(updatedLine);
+                    writer.newLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+    
+        return userFound;
     }
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Method to view resources
 private void viewResources() {
@@ -282,6 +363,14 @@ private void displayResourceContent(File resourceFile) {
     resourceFrame.setVisible(true);
 }
 
+
+
+
+
+
+
+
+
     
 
     // Method to give feedback
@@ -317,6 +406,18 @@ private void displayResourceContent(File resourceFile) {
         feedbackFrame.setVisible(true);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
     // Method to save feedback with a number in the file
     private void saveFeedback(String feedback) {
         // File where feedback will be stored
@@ -348,4 +449,128 @@ private void displayResourceContent(File resourceFile) {
             System.err.println("Error saving feedback: " + e.getMessage());
         }
     }
+
+
+
+
+// Method to view user details
+private void viewMyDetails() {
+    String currentUsername = JOptionPane.showInputDialog(frame, "Enter your username to view details:", 
+                                                        "View My Details", JOptionPane.QUESTION_MESSAGE);
+    if (currentUsername == null || currentUsername.trim().isEmpty()) {
+        JOptionPane.showMessageDialog(frame, "Username cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    File userFile = new File("users.txt");
+    if (!userFile.exists()) {
+        JOptionPane.showMessageDialog(frame, "User data file not found!", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(userFile))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] userDetails = line.split("\\|"); // Split by '|'
+            if (userDetails.length == 5 && userDetails[2].equals(currentUsername)) {
+                // Create a new frame to display the user's details
+                JFrame detailsFrame = new JFrame("My Details");
+                detailsFrame.setSize(400, 300);
+                detailsFrame.setLocationRelativeTo(frame);
+
+                // Create a JTextArea to show the user's details
+                JTextArea detailsArea = new JTextArea();
+                detailsArea.setEditable(false);
+                detailsArea.setText("First Name: " + userDetails[0] + "\n" +
+                                    "Last Name: " + userDetails[1] + "\n" +
+                                    "Username: " + userDetails[2] + "\n" +
+                                    "Email: " + userDetails[4]); // Exclude password
+
+                // Add the JTextArea to a scroll pane and set it in the frame
+                detailsFrame.add(new JScrollPane(detailsArea));
+                detailsFrame.setVisible(true);
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(frame, "User not found!", "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(frame, "Error reading user data file!", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+
+
+// Method to delete the user's account
+private void deleteMyAccount(JFrame parentFrame) {
+    // Prompt for confirmation before deleting
+    int response = JOptionPane.showConfirmDialog(parentFrame,
+            "Are you sure you want to delete your account? This action is irreversible.",
+            "Confirm Deletion",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+
+    if (response == JOptionPane.YES_OPTION) {
+        // Proceed with deletion if confirmed
+        String username = JOptionPane.showInputDialog(parentFrame, "Enter your username to confirm:");
+
+        if (username != null && !username.trim().isEmpty()) {
+            if (deleteUserFromFile(username.trim())) {
+                JOptionPane.showMessageDialog(parentFrame, "Your account has been deleted successfully.");
+                parentFrame.dispose(); // Close the dashboard
+                new MainGUI().initialize(); // Optionally, show the main menu again
+            } else {
+                JOptionPane.showMessageDialog(parentFrame, "Account not found. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(parentFrame, "Username is required to confirm deletion.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+}
+
+// Method to delete the user from the file
+private boolean deleteUserFromFile(String username) {
+    File userFile = new File("users.txt");
+    if (!userFile.exists()) {
+        return false; // File not found
+    }
+
+    List<String> updatedLines = new ArrayList<>();
+    boolean userFound = false;
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(userFile))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] userDetails = line.split("\\|"); // Split by '|'
+            if (userDetails.length == 5 && userDetails[2].equals(username)) {
+                userFound = true; // User found, so we skip this line
+            } else {
+                updatedLines.add(line); // Add line to updated list if not matching
+            }
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+        return false;
+    }
+
+    if (userFound) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(userFile))) {
+            for (String updatedLine : updatedLines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true; // Successfully deleted
+    }
+    return false; // User not found
+}
+
+
+
+
+
 }

@@ -398,7 +398,7 @@ public static void showUsersInTextArea(JFrame parentFrame) {
             String[] userDetails = line.split("\\|");
             if (userDetails.length >= 5) {
                 // Add only the first name and last name to the list
-                userNames.add(userDetails[0].trim() + " " + userDetails[1].trim() + " " + userDetails[4].trim());
+                userNames.add(userDetails[0].trim() + " " + userDetails[1].trim() + " " + userNames.add(userDetails[4].trim()));
 
             }
         }
@@ -414,7 +414,7 @@ public static void showUsersInTextArea(JFrame parentFrame) {
     }
 
     // Add components to the panel
-    panel.add(new JLabel("Users (Names & Email):"), BorderLayout.NORTH);
+    panel.add(new JLabel("Users (First Name and Last Name):"), BorderLayout.NORTH);
     panel.add(scrollPane, BorderLayout.CENTER);
 
     // Add the panel to the frame

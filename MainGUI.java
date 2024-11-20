@@ -170,12 +170,15 @@ public class MainGUI {
         JPasswordField passwordField = new JPasswordField();
         JButton loginButton = new JButton("Login");
 
+        JButton backButton = new JButton("Back");
+
         // Add components to the panel
         panel.add(usernameLabel);
         panel.add(usernameField);
         panel.add(passwordLabel);
         panel.add(passwordField);
         panel.add(loginButton);
+        panel.add(backButton);
 
         // Apply the button style to the login button
         styleButton(loginButton);
@@ -198,6 +201,14 @@ public class MainGUI {
                     // Show an error message if login fails
                     JOptionPane.showMessageDialog(loginFrame, "Invalid credentials, please try again.", "Login Error", JOptionPane.ERROR_MESSAGE);
                 }
+            }
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loginFrame.dispose();
+                
             }
         });
 

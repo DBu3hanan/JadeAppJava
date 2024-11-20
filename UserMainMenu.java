@@ -12,6 +12,7 @@ public class UserMainMenu {
     private JFrame frame;
 
     public void display() {
+        
         frame = new JFrame("User Main Menu");
         frame.setSize(400, 300);
         frame.setLocationRelativeTo(null); // Center the window

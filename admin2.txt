@@ -71,7 +71,7 @@ private static boolean updateUserDetails(String username, String newFirstName, S
     try (BufferedReader reader = new BufferedReader(new FileReader(userFile))) {
         String line;
         while ((line = reader.readLine()) != null) {
-            String[] userDetails = line.split("//|"); // Assuming | is the delimiter
+            String[] userDetails = line.split(","); // Assuming | is the delimiter
             if (userDetails.length == 4 && userDetails[2].equals(username)) {
                 // Update first and last name
                 userDetails[0] = newFirstName;
@@ -146,9 +146,6 @@ private static boolean updateUserDetails(String username, String newFirstName, S
         editorFrame.setLocationRelativeTo(parentFrame);
 
         JTextArea resourceTextArea = new JTextArea(20, 40);
-        resourceTextArea.setLineWrap(true); // Enable line wrapping
-        resourceTextArea.setWrapStyleWord(true); // Enable word wrapping
-    
         try (BufferedReader reader = new BufferedReader(new FileReader(resourceFile))) {
             resourceTextArea.read(reader, null);
         } catch (IOException ex) {

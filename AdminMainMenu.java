@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
+
 public class AdminMainMenu {
 
     private JFrame frame;
@@ -8,7 +9,7 @@ public class AdminMainMenu {
     public void display() {
         // Create the main frame for the Admin Menu
         frame = new JFrame("Administrator Main Menu");
-        frame.setSize(400, 350);
+        frame.setSize(400, 400);
         frame.setLocationRelativeTo(null); // Center the window
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -25,18 +26,21 @@ public class AdminMainMenu {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(5, 2, 10, 10)); // GridLayout for buttons with spacing
 
-        // Create buttons for each of the admin actions
         JButton createUserButton = new JButton("Create User");
         JButton viewUserButton = new JButton("View User");
         JButton updateUserButton = new JButton("Update User");
         JButton createResourceButton = new JButton("Create Resource");
         JButton editResourceButton = new JButton("Edit Resource");
-        JButton viewResourceButton = new JButton("View Resource");
+        JButton viewResourceButton = new JButton("View Resource List");
+        JButton deleteUserButton = new JButton("Delete User");  // New delete user button
+        JButton deleteResourceButton = new JButton("Delete Resource");  // New delete resource button
         JButton reviewFeedbackButton = new JButton("Review Feedback");
         JButton backButton = new JButton("Go Back");
+        
 
         // Action listener for "Create User" button
         createUserButton.addActionListener(e -> {
+            
             AdminFunctions.showCreateUserForm(frame);
         });
 
@@ -70,6 +74,12 @@ public class AdminMainMenu {
             AdminFunctionsTwo.showFeedbackWindow(frame);
         });
 
+         // Action listener for deleting a user
+         deleteUserButton.addActionListener(e -> AdminFunctionsTwo.deleteUser(frame));
+
+         // Action listener for deleting a resource
+         deleteResourceButton.addActionListener(e -> AdminFunctionsTwo.deleteResource(frame));
+
         // Action listener for the "Go Back" button
         backButton.addActionListener(e -> {
             frame.dispose();
@@ -84,6 +94,8 @@ public class AdminMainMenu {
         buttonPanel.add(editResourceButton);
         buttonPanel.add(viewResourceButton);
         buttonPanel.add(reviewFeedbackButton);
+        buttonPanel.add(deleteUserButton);
+        buttonPanel.add(deleteResourceButton);
         buttonPanel.add(backButton);
 
         // Add the button panel to the main panel (Center part of the frame)
